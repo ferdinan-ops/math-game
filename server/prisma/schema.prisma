@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Siswa {
+  id       String  @id @default(uuid())
+  username String  @unique
+  password String  @default("")
+  avatar   String  @default("")
+  skor     Int
+  nilai    Nilai[]
+}
+
+model Materi {
+  id          String @id @default(uuid())
+  nama_materi String
+  level       Int
+
+  sub_materi SubMateri[]
+}
+
+model SubMateri {
+  id              String  @id @default(uuid())
+  nama_sub_materi String
+  level           Int
+  mode_ujian      Boolean @default(false)
+  id_materi       String
+
+  materi Materi  @relation(fields: [id_materi], references: [id])
+  nilai  Nilai[]
+}
+
+model Nilai {
+  id            String @id @default(uuid())
+  nilai         Int
+  id_siswa      String
+  id_sub_materi String
+
+  siswa      Siswa     @relation(fields: [id_siswa], references: [id])
+  sub_materi SubMateri @relation(fields: [id_sub_materi], references: [id])
+}
+
+model Guru {
+  id                String  @id @default(uuid())
+  fullname          String
+  username          String  @unique
+  email             String  @unique
+  is_email_verified Boolean @default(false)
+  password          String  @default("")
+  photo             String  @default("")
+  token             String  @unique
+}
